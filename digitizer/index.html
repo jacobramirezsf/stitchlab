@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayside Digitizer</title>
+<style>
+  :root {
+    --bg: #12100e; --panel: #1c1916; --line: #2e2a25;
+    --ink: #ece7de; --dim: #9b948a; --accent: #d9a441; --err: #d96a5a;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); min-height: 100vh;
+    font: 15px/1.5 -apple-system, "Helvetica Neue", sans-serif;
+  }
+  header { padding: 22px 28px 10px; display: flex; align-items: baseline; gap: 12px; }
+  header h1 { font: 600 22px Georgia, serif; letter-spacing: .3px; }
+  header span { color: var(--dim); font-size: 13px; }
+  main { display: grid; grid-template-columns: 330px 1fr; gap: 18px; padding: 12px 28px 40px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .drop {
+    border: 1.5px dashed var(--line); border-radius: 8px; padding: 26px 14px;
+    text-align: center; color: var(--dim); cursor: pointer; transition: border-color .15s;
+  }
+  .drop.hover, .drop:hover { border-color: var(--accent); color: var(--ink); }
+  .drop strong { color: var(--ink); }
+  .filename { margin-top: 8px; font-size: 13px; color: var(--accent); word-break: break-all; }
+
+  label { display: block; font-size: 12px; color: var(--dim); margin: 14px 0 4px; text-transform: uppercase; letter-spacing: .6px; }
+  select, input[type=number] {
+    width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 8px 10px; font-size: 14px;
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  button.run {
+    margin-top: 18px; width: 100%; padding: 12px; border: 0; border-radius: 7px;
+    background: var(--accent); color: #17130b; font-size: 15px; font-weight: 650; cursor: pointer;
+  }
+  button.run:disabled { opacity: .45; cursor: default; }
+  button.ghost {
+    margin-top: 10px; width: 100%; padding: 10px; border-radius: 7px;
+    background: none; border: 1px solid var(--accent); color: var(--accent);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  button.ghost:disabled { opacity: .4; cursor: default; }
+  .hint { margin-top: 10px; font-size: 12px; color: var(--dim); }
+
+  .results { display: flex; flex-direction: column; gap: 14px; min-height: 300px; }
+  .imgwrap { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: center; }
+  .imgwrap img, .imgwrap canvas { max-width: 100%; max-height: 62vh; border-radius: 6px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 10px; justify-content: center; }
+  .tabs button {
+    background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 20px;
+    padding: 4px 14px; font-size: 13px; cursor: pointer;
+  }
+  .tabs button.on { border-color: var(--accent); color: var(--accent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 5px 13px; font-size: 13px; }
+  .chip b { color: var(--accent); font-weight: 600; }
+  .warn { border-color: var(--err); color: var(--err); }
+  .downloads { display: flex; gap: 8px; flex-wrap: wrap; }
+  .downloads a {
+    border: 1px solid var(--accent); color: var(--accent); text-decoration: none;
+    border-radius: 7px; padding: 8px 16px; font-size: 14px; font-weight: 600;
+  }
+  .downloads a:hover { background: var(--accent); color: #17130b; }
+  .empty { color: var(--dim); text-align: center; padding: 80px 0; }
+  .error { color: var(--err); padding: 14px; }
+  .spin { text-align: center; padding: 60px 0; color: var(--dim); }
+  .spin::before {
+    content: ""; display: block; width: 26px; height: 26px; margin: 0 auto 12px;
+    border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%;
+    animation: r 0.8s linear infinite;
+  }
+  @keyframes r { to { transform: rotate(360deg); } }
+
+  .direct-controls { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+  .treat { display: flex; gap: 6px; flex-wrap: wrap; }
+  .treat button {
+    background: var(--bg); border: 1px solid var(--line); color: var(--dim);
+    border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+  }
+  .treat button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .swatches { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .swatch {
+    width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; padding: 0; overflow: hidden;
+  }
+  .swatch.on { border-color: var(--ink); }
+  .swatch input { width: 40px; height: 40px; margin: -8px; cursor: pointer; border: 0; padding: 0; }
+  .selinfo { font-size: 13px; color: var(--dim); min-height: 20px; }
+  .notes { font-size: 13px; color: var(--dim); font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bayside Digitizer</h1>
+  <span>V5 engine — SVG/PNG → stitches</span>
+</header>
+<main>
+  <div class="panel">
+    <div class="drop" id="drop">
+      <strong>Drop artwork here</strong><br>or click to choose<br>
+      <span style="font-size:12px">SVG or PNG</span>
+      <div class="filename" id="fname"></div>
+    </div>
+    <input type="file" id="file" accept=".svg,.png,.jpg,.jpeg" hidden>
+
+    <div class="row2">
+      <div>
+        <label>Size (mm, long side)</label>
+        <input type="number" id="size" value="50.8" step="0.1" min="10" max="400">
+      </div>
+      <div>
+        <label>Fabric</label>
+        <select id="fabric">
+          <option value="">— none —</option>
+          <option>twill</option><option>denim</option><option>canvas</option>
+          <option>knit</option><option>cap</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Style</label>
+        <select id="style">
+          <option selected>master</option><option>redwork</option><option>satin</option>
+        </select>
+      </div>
+      <div>
+        <label>Frontend</label>
+        <select id="frontend">
+          <option value="auto">auto</option>
+          <option value="lineart">line art</option>
+          <option value="raster">raster (color)</option>
+        </select>
+      </div>
+    </div>
+    <button class="run" id="run" disabled>Digitize</button>
+    <button class="ghost" id="ai" disabled>✦ AI plan — Claude directs treatments &amp; colors</button>
+    <div class="hint">
+      <b>master</b> = Jacob's reference style: single-pass runs, satin on
+      visibly wide marks. In the <b>Direct</b> tab, click any element to
+      change its treatment or color, then re-stitch.
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="empty">Drop a design to begin.</div>
+  </div>
+</main>
+<script>
+let file = null, lastB64 = null, lastResult = null;
+let plan = { elements: {}, palette: null };
+let selected = null, idmapData = null, artImg = null;
+const $ = id => document.getElementById(id);
+const PX_PER_MM = 16;
+const TREATMENTS = ['auto', 'run', 'satin', 'fill', 'skip'];
+const DEFAULT_PALETTE = ['#182754', '#a81626', '#145c37', '#dea820', '#282828', '#ebe8e1'];
+
+const drop = $('drop');
+drop.onclick = () => $('file').click();
+$('file').onchange = e => pick(e.target.files[0]);
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('hover'); };
+drop.ondragleave = () => drop.classList.remove('hover');
+drop.ondrop = e => {
+  e.preventDefault(); drop.classList.remove('hover');
+  pick(e.dataTransfer.files[0]);
+};
+function pick(f) {
+  if (!f) return;
+  file = f; lastB64 = null;
+  plan = { elements: {}, palette: null };
+  $('fname').textContent = f.name;
+  $('run').disabled = false;
+  $('ai').disabled = false;
+}
+
+async function fileToPngB64(f, sizeMm) {
+  if (!f.name.toLowerCase().endsWith('.svg')) {
+    const buf = new Uint8Array(await f.arrayBuffer());
+    return btoa(buf.reduce((s, b) => s + String.fromCharCode(b), ''));
+  }
+  const text = await f.text();
+  const blobUrl = URL.createObjectURL(new Blob([text], {type: 'image/svg+xml'}));
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = blobUrl; });
+  const w = img.naturalWidth || 1000, h = img.naturalHeight || 1000;
+  const scale = (sizeMm * PX_PER_MM) / Math.max(w, h);
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(w * scale);
+  canvas.height = Math.round(h * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  URL.revokeObjectURL(blobUrl);
+  return canvas.toDataURL('image/png').split(',')[1];
+}
+
+async function ensureB64() {
+  if (!lastB64) lastB64 = await fileToPngB64(file, parseFloat($('size').value) || 50.8);
+  return lastB64;
+}
+
+async function digitize() {
+  $('run').disabled = true; $('ai').disabled = true;
+  $('results').innerHTML = '<div class="spin">Digitizing — placing every stitch…</div>';
+  try {
+    const body = {
+      filename: file.name.replace(/\.svg$/i, '.png'), data: await ensureB64(),
+      size_mm: parseFloat($('size').value) || 50.8,
+      fabric: $('fabric').value, style: $('style').value,
+      frontend: $('frontend').value,
+    };
+    if (Object.keys(plan.elements).length || plan.palette) {
+      body.plan = { elements: plan.elements, palette: plan.palette || undefined };
+    }
+    const res = await fetch('/api/digitize', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const j = await res.json();
+    if (j.error) throw new Error(j.error);
+    lastResult = j;
+    if (!plan.palette) plan.palette = j.palette || DEFAULT_PALETTE.slice();
+    await decodeIdmap(j.idmap);
+    show(j, 'sim');
+  } catch (err) {
+    $('results').innerHTML = `<div class="panel error">✗ ${err.message}</div>`;
+  }
+  $('run').disabled = false; $('ai').disabled = false;
+}
+$('run').onclick = digitize;
+
+$('ai').onclick = async () => {
+  $('run').disabled = true; $('ai').disabled = true;
+  $('results').innerHTML = '<div class="spin">Claude is reading the artwork…</div>';
+  try {
+    const res = await fetch('/api/direct', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ data: await ensureB64(),
+                             size_mm: parseFloat($('size').value) || 50.8 }),
+    });
+    const j = await res.json();
+    if (j.error) throw new Error(j.error);
+    plan.elements = {};
+    for (const [id, e] of Object.entries(j.elements || {})) {
+      plan.elements[id] = { treatment: e.treatment || 'auto',
+                            color: e.color ?? 0, why: e.why || '' };
+    }
+    if (Array.isArray(j.palette) && j.palette.length) plan.palette = j.palette;
+    plan.notes = j.notes || '';
+    await digitize();          // stitch the proposal immediately
+    switchTab('direct');       // land on the Direct tab for review
+  } catch (err) {
+    $('results').innerHTML = `<div class="panel error">✗ ${err.message}</div>`;
+    $('run').disabled = false; $('ai').disabled = false;
+  }
+};
+
+function loadImg(src) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('image decode failed'));
+    img.src = src;
+  });
+}
+
+async function decodeIdmap(b64) {
+  idmapData = null;
+  if (!b64) return;
+  try {
+    const img = await loadImg('data:image/png;base64,' + b64);
+    const c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    idmapData = { data: ctx.getImageData(0, 0, c.width, c.height), w: c.width, h: c.height };
+    artImg = await loadImg('data:image/png;base64,' + lastB64);
+  } catch {
+    idmapData = null;   // Direct tab just won't offer element editing
+  }
+}
+
+function currentTab() {
+  return document.querySelector('.tabs button.on')?.dataset.t || 'sim';
+}
+function switchTab(t) {
+  document.querySelectorAll('.tabs button').forEach(x =>
+    x.classList.toggle('on', x.dataset.t === t));
+  $('viewwrap').innerHTML = '';
+  if (t === 'direct') renderDirect();
+  else {
+    const img = document.createElement('img');
+    img.src = 'data:image/png;base64,' + (t === 'sim' ? lastResult.sim : lastResult.preview);
+    $('viewwrap').appendChild(img);
+  }
+  $('directpanel').style.display = t === 'direct' ? 'flex' : 'none';
+}
+
+function show(j, tab) {
+  const s = j.stats;
+  const warnings = s.warnings.map(w => `<span class="chip warn">${w}</span>`).join('');
+  const planned = Object.keys(plan.elements).length;
+  $('results').innerHTML = `
+    <div class="chips">
+      <span class="chip"><b>${s.stitches.toLocaleString()}</b> stitches</span>
+      <span class="chip"><b>${s.trims}</b> trims</span>
+      <span class="chip"><b>${s.size_mm[0]} × ${s.size_mm[1]}</b> mm</span>
+      <span class="chip">${j.frontend} / ${j.style}${j.fabric ? ' / ' + j.fabric : ''}</span>
+      ${planned ? `<span class="chip"><b>${planned}</b> directed elements</span>` : ''}
+      ${warnings || '<span class="chip" style="color:#7fb069">✓ validation clean</span>'}
+    </div>
+    ${plan.notes ? `<div class="notes">✦ ${plan.notes}</div>` : ''}
+    <div class="imgwrap">
+      <div class="tabs">
+        <button data-t="sim">Thread simulation</button>
+        <button data-t="preview">Plan preview</button>
+        ${j.elements && j.elements.length ? '<button data-t="direct">Direct</button>' : ''}
+      </div>
+      <div id="viewwrap"></div>
+      <div class="direct-controls" id="directpanel" style="display:none">
+        <div class="selinfo" id="selinfo">Click an element in the artwork to direct it.</div>
+        <div class="treat" id="treat"></div>
+        <div class="swatches" id="swatches"></div>
+        <button class="ghost" id="apply" style="margin-top:4px">Apply plan &amp; re-stitch</button>
+      </div>
+    </div>
+    <div class="downloads" id="dl"></div>`;
+  document.querySelectorAll('.tabs button').forEach(b =>
+    b.onclick = () => switchTab(b.dataset.t));
+  for (const [ext, b64] of Object.entries(j.files)) {
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const url = URL.createObjectURL(new Blob([bytes]));
+    const a = document.createElement('a');
+    a.href = url; a.download = `${j.name}.${ext}`; a.textContent = ext.toUpperCase();
+    $('dl').appendChild(a);
+  }
+  $('apply')?.addEventListener('click', digitize);
+  switchTab(tab || 'sim');
+}
+
+function renderDirect() {
+  if (!idmapData || !artImg) return;
+  const c = document.createElement('canvas');
+  c.width = idmapData.w; c.height = idmapData.h;
+  c.style.cursor = 'crosshair';
+  $('viewwrap').appendChild(c);
+  paintDirect(c);
+  c.onclick = e => {
+    const r = c.getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left) * c.width / r.width);
+    const y = Math.floor((e.clientY - r.top) * c.height / r.height);
+    // sample outward in rings so thin strokes are clickable; nearest wins
+    const R = Math.max(10, Math.round(idmapData.w / r.width * 8));
+    let id = 0;
+    outer:
+    for (let rad = 0; rad <= R; rad++)
+      for (let dy = -rad; dy <= rad; dy++)
+        for (let dx = -rad; dx <= rad; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== rad) continue;
+          const xx = x + dx, yy = y + dy;
+          if (xx < 0 || yy < 0 || xx >= idmapData.w || yy >= idmapData.h) continue;
+          const v = idmapData.data.data[(yy * idmapData.w + xx) * 4];
+          if (v) { id = v; break outer; }
+        }
+    selected = id || null;
+    paintDirect(c);
+    renderControls();
+  };
+  renderControls();
+}
+
+function paintDirect(c) {
+  const ctx = c.getContext('2d');
+  ctx.drawImage(artImg, 0, 0);
+  const px = idmapData.data.data;
+  const overlay = ctx.getImageData(0, 0, c.width, c.height);
+  const od = overlay.data;
+  const pal = plan.palette || DEFAULT_PALETTE;
+  const tint = {};
+  for (const [id, e] of Object.entries(plan.elements)) {
+    const hex = (pal[e.color ?? 0] || '#d9a441').replace('#', '');
+    tint[id] = [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16),
+                e.treatment === 'skip'];
+  }
+  for (let i = 0; i < px.length; i += 4) {
+    const id = px[i];
+    if (!id) continue;
+    const t = tint[id];
+    const isSel = id === selected;
+    if (!t && !isSel) continue;
+    const [r, g, b, skip] = t || [217, 164, 65, false];
+    const a = isSel ? 0.85 : 0.55;
+    od[i]   = od[i]   * (1 - a) + r * a;
+    od[i+1] = od[i+1] * (1 - a) + g * a;
+    od[i+2] = od[i+2] * (1 - a) + b * a;
+    if (skip) { od[i] = od[i+1] = od[i+2] = 225; }
+  }
+  ctx.putImageData(overlay, 0, 0);
+}
+
+function renderControls() {
+  const info = $('selinfo'), treat = $('treat'), sw = $('swatches');
+  if (!treat) return;
+  const pal = plan.palette || DEFAULT_PALETTE;
+  const entry = selected ? (plan.elements[selected] || { treatment: 'auto', color: 0 }) : null;
+  if (!selected) {
+    info.textContent = 'Click an element in the artwork to direct it.';
+    treat.innerHTML = '';
+  } else {
+    const el = (lastResult.elements || []).find(e => e.id === selected);
+    info.innerHTML = `<b style="color:var(--accent)">Element ${selected}</b>` +
+      (el ? ` — ${el.area_mm2}mm²` : '') +
+      (entry.why ? ` · <i>${entry.why}</i>` : '');
+    treat.innerHTML = TREATMENTS.map(t =>
+      `<button class="${entry.treatment === t ? 'on' : ''}" data-v="${t}">${t}</button>`).join('');
+    treat.querySelectorAll('button').forEach(b => b.onclick = () => {
+      plan.elements[selected] = { ...entry, treatment: b.dataset.v };
+      renderControls();
+      const c = document.querySelector('#viewwrap canvas');
+      if (c) paintDirect(c);
+    });
+  }
+  sw.innerHTML = '<span style="font-size:12px;color:var(--dim)">THREADS</span>';
+  pal.forEach((hex, i) => {
+    const b = document.createElement('button');
+    b.className = 'swatch' + (entry && entry.color === i ? ' on' : '');
+    const inp = document.createElement('input');
+    inp.type = 'color'; inp.value = hex;
+    inp.oninput = () => { pal[i] = inp.value; plan.palette = pal; };
+    b.appendChild(inp);
+    b.onclick = e => {
+      if (selected && e.target === b) {
+        plan.elements[selected] = { ...(plan.elements[selected] || {treatment:'auto'}), color: i };
+        renderControls();
+        const c = document.querySelector('#viewwrap canvas');
+        if (c) paintDirect(c);
+      }
+    };
+    sw.appendChild(b);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+pyembroidery==1.5.1
+numpy==2.2.6
+scipy==1.15.3
+scikit-image==0.25.2
+shapely==2.1.2
+pillow==12.3.0

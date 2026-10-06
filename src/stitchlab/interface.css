@@ -1,0 +1,79 @@
+/* Stitchlab interface only. Generator geometry and exported files are unchanged.
+   Visual language matches /animation: Bayside tokens (warm paper, ink, hairlines),
+   EB Garamond names over DM Sans, square corners, filled-ink selected states.
+   Layout rules (grid, rail, frame, mobile shell) are the Sep 2026 overhaul's. */
+.stitchlab-ui{--sl-paper:#f7f5f1;--sl-ink:#26324d}
+.stitchlab-ui *{scrollbar-width:thin;scrollbar-color:var(--color-dim) transparent}
+.stitchlab-ui button,.stitchlab-ui input,.stitchlab-ui select{border-radius:0}
+.stitchlab-ui button{cursor:pointer;transition:background-color .15s,border-color .15s,color .15s}
+.stitchlab-ui button:disabled{cursor:default}
+.stitchlab-ui :is(button,a,input,select,summary):focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.sl-header{background:var(--color-bg)}
+.sl-header>div{max-width:1440px;min-height:58px;padding:10px 28px}
+.sl-header button{min-height:32px}
+.sl-gallery{max-width:1360px;margin:auto;padding:0 32px 64px}
+.sl-hero{padding:52px 0 38px;display:flex;justify-content:space-between;gap:48px;align-items:center}
+.sl-kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-mid);margin-bottom:12px}
+.sl-hero h1{font-family:var(--font-serif);font-size:clamp(36px,4.2vw,56px);font-weight:400;line-height:1.08;margin:0 0 18px}
+.sl-hero h1 span{font-style:italic}
+.sl-hero>div>p:last-child{font-size:16px;line-height:1.7;max-width:530px;color:var(--color-mid)}
+.sl-hero-note{border-left:1px solid var(--color-hairline);padding:8px 0 8px 36px;min-width:270px}
+.sl-hero-note span{display:block;margin:12px 0;font-size:15px;color:var(--color-fg)}
+.sl-hero .sl-hero-note p{font-size:12px;margin-top:22px;line-height:1.7;color:var(--color-mid)}
+.sl-discovery{padding:22px;background:var(--sl-paper);border:1px solid var(--color-hairline)}
+.sl-search{display:flex;align-items:center;gap:24px}
+.sl-search>span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-mid);white-space:nowrap}
+.sl-search input{width:100%;border:1px solid var(--color-hairline);background:var(--color-bg);padding:12px 16px;font-size:15px;color:var(--color-fg);min-width:0}
+.sl-search input:focus{border-color:var(--color-fg);outline:none}
+.sl-search input::placeholder{color:var(--color-dim)}
+.sl-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.sl-filters button{padding:7px 12px;font-size:13px;border:1px solid var(--color-hairline);color:var(--color-mid)}
+.sl-filters button:hover{color:var(--color-fg);border-color:var(--color-mid)}
+.sl-filters button[aria-pressed=true]{background:var(--color-fg);color:var(--color-bg);border-color:var(--color-fg)}
+.sl-results{display:flex;justify-content:space-between;align-items:baseline;margin:32px 0 18px;gap:16px}
+.sl-results h1{font-family:var(--font-serif);font-size:26px;font-weight:400;line-height:1.15}
+.sl-results>span{font-size:13px;color:var(--color-mid);white-space:nowrap}
+.sl-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.stitchlab-ui .sl-tool-card{display:flex;flex-direction:column;text-align:left;background:var(--color-card);border:1px solid var(--color-hairline);overflow:hidden}
+.sl-tool-card:hover{border-color:var(--color-fg)}
+.sl-tool-card:hover h3{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.sl-tool-art{position:relative;width:100%;aspect-ratio:1.5;overflow:hidden;background:var(--sl-paper)}
+.sl-tool-art canvas{width:100%;height:100%;object-fit:contain}
+.sl-new{position:absolute;top:12px;left:12px;background:var(--color-fg);color:var(--color-bg);font-size:10px;padding:3px 7px;letter-spacing:.14em}
+.sl-card-copy{padding:14px 16px 16px;flex:1;display:flex;flex-direction:column;width:100%;border-top:1px solid var(--color-hairline)}
+.sl-category{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-mid)}
+.sl-card-copy h3{font-family:var(--font-serif);font-size:20px;font-weight:400;line-height:1.15;color:var(--color-fg);margin:6px 0 4px;display:flex;justify-content:space-between;gap:8px}
+.sl-card-copy h3 span{color:var(--color-dim);font-family:var(--font-sans);font-size:14px}
+.sl-card-copy p{font-size:13px;line-height:1.5;color:var(--color-mid);margin-bottom:16px}
+.sl-card-action{font-size:12px;color:var(--color-fg);margin-top:auto}
+.sl-gallery-foot{font-size:12px;line-height:1.7;color:var(--color-mid);margin:28px 0}
+.sl-empty{padding:60px 20px;text-align:center;background:var(--sl-paper);border:1px solid var(--color-hairline)}
+.sl-empty h3{font-family:var(--font-serif);font-size:24px;font-weight:400}.sl-empty p{margin:12px;color:var(--color-mid)}.sl-empty button{background:var(--color-fg);color:var(--color-bg);padding:10px 18px}
+.sl-tool-heading>div:first-child{min-height:44px;align-items:center;padding:8px 24px;max-width:1600px}
+.sl-tool-heading .font-serif{font-size:1.25rem}
+.sl-editor-frame canvas{background-clip:padding-box}
+.sl-control-rail{background:var(--color-bg);padding:20px}
+.sl-rail-title{font-family:var(--font-serif);font-size:22px;line-height:1.15;padding-bottom:10px}
+.sl-rail-title span{display:block;font-family:var(--font-sans);font-size:12px;color:var(--color-mid);margin-top:5px}
+.sl-control-section{border:0;border-bottom:1px solid var(--color-hairline);border-radius:0;padding:14px 0;background:transparent}
+.sl-control-section>button{min-height:32px}
+.sl-control-section>div{margin-top:14px}
+.sl-range{grid-template-columns:1fr auto;gap:3px 12px;margin-top:12px;font-size:13px}
+.sl-range>span:first-child{grid-column:1;grid-row:1;white-space:normal;overflow:visible}
+.sl-range>span:last-child{grid-column:2;grid-row:1;font-size:12px;color:var(--color-fg);background:var(--color-card);padding:2px 6px;font-variant-numeric:tabular-nums}
+.sl-range input{grid-column:1 / -1;grid-row:2;height:30px;accent-color:var(--color-fg)}
+.sl-modes button{min-height:34px;font-size:12px;padding:6px 10px}
+.sl-extra-exports{font-size:12px;color:var(--color-mid);padding:4px 0}
+.sl-extra-exports summary{cursor:pointer;padding:6px 0;width:fit-content}
+.sl-extra-exports summary:hover{color:var(--color-fg)}
+.sl-extra-exports[open]{padding-bottom:12px}
+@media(min-width:1024px){.sl-editor-frame>.flex-1>div:last-child{background:var(--color-bg);padding:12px 18px}}
+@media(max-width:1100px){.sl-tool-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.sl-hero-note{min-width:235px}.sl-control-rail{width:330px}}
+@media(max-width:767px){.sl-header>div{min-height:52px;padding:8px 14px}.sl-header nav button{min-height:34px}.sl-header a{display:none}.sl-gallery{padding:0 16px 32px}.sl-hero{padding:32px 0 26px}.sl-hero h1{font-size:38px}.sl-hero>div>p:last-child{font-size:14px}.sl-hero-note{display:none}.sl-kicker{font-size:10px}.sl-discovery{padding:14px}.sl-search{display:block}.sl-search>span{display:block;margin-bottom:8px}.sl-search input{font-size:16px;padding:11px}.sl-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.sl-filters button{flex-shrink:0;min-height:40px}.sl-results h1{font-size:22px}.sl-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.sl-card-copy{padding:11px 12px 13px}.sl-card-copy h3{font-size:17px}.sl-card-copy p{font-size:12px;margin-bottom:12px}.sl-category{font-size:9px}.sl-tool-heading>div:first-child{padding:5px 12px;min-height:40px;gap:12px}.sl-tool-heading .font-serif{font-size:1.0625rem}.sl-mobile-tool{height:calc(100dvh - 96px);min-height:0}.sl-mobile-tool button{min-height:32px}.sl-mobile-tool>div:last-child button{font-size:11px;min-height:48px}.sl-mobile-tool input[type=number]{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.stitchlab-ui *{scroll-behavior:auto!important;transition:none!important}}
+
+.sl-hero-compact{padding:24px 0}
+.sl-hero-compact .sl-hero-note{display:flex;align-items:center;gap:24px;border:0;padding:0;width:100%}
+.sl-hero-compact .sl-hero-note span{margin:0;font-size:13px;white-space:nowrap}
+.sl-hero-compact .sl-hero-note p{margin:0 0 0 auto;font-size:12px}
+@media(max-width:767px){.sl-hero-compact{padding:12px 0}.sl-hero-compact .sl-hero-note{display:none}}

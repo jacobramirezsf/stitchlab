@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #f4f2ee;
+  --color-fg: #1c1c1a;
+  --color-mid: #78766f;
+  --color-dim: #a8a69f;
+  --color-hairline: #e0ddd7;
+  --color-card: #eceae5;
+  --color-accent: #082870;
+
+  --font-serif: "EB Garamond", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
+
+  --spacing-pad: clamp(1.5rem, 5vw, 4rem);
+  --spacing-nav: 58px;
+  --container-site: 1260px;
+}
+
+/* Base resets live in @layer base so Tailwind utilities (which sit in the
+   utilities layer) win. Without the layer, an unlayered `a { color: inherit }`
+   overrides utilities like `text-bg` and makes anchor-button labels invisible. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+    font-size: inherit;
+  }
+}
+
+.diag-stripe {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-hairline) 0px,
+    var(--color-hairline) 1px,
+    transparent 1px,
+    transparent 20px
+  );
+}
+
+/* Inline links inside paragraphs get the accent treatment */
+.prose-links p a,
+section p a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Studio Frequency. Ambient details. */
+@keyframes tape-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.tape-reel {
+  animation: tape-spin 10s linear infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tape-reel { animation: none; }
+}
+
+@keyframes np-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.np-fade {
+  animation: np-fade 0.35s ease-out;
+}
+
+@keyframes cf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.cf-fade-in {
+  animation: cf-fade-in 300ms ease-out forwards;
+}
+
+/* Studio Frequency. Thread dial. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Metallic thread treatment. Derived from existing neutral tokens. */
+.metallic-static {
+  background: linear-gradient(
+    135deg,
+    var(--color-hairline) 0%,
+    var(--color-card) 35%,
+    var(--color-dim) 60%,
+    var(--color-hairline) 100%
+  );
+}
+.metallic-shimmer {
+  background: linear-gradient(
+    135deg,
+    var(--color-hairline) 0%,
+    var(--color-card) 35%,
+    var(--color-dim) 60%,
+    var(--color-hairline) 100%
+  );
+  background-size: 220% 220%;
+  background-position: 0% 0%;
+  animation: metallic-pan 3s ease-in-out infinite;
+}
+@keyframes metallic-pan {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metallic-shimmer { animation: none; }
+}
+
+/* iOS Safari zooms the whole page when a focused form control's font-size is
+   under 16px. Force 16px on the Lab's controls at phone widths — unlayered on
+   purpose so it outranks the text-size utilities. */
+@media (max-width: 639px) {
+  .lab-root input:not([type="checkbox"]):not([type="range"]),
+  .lab-root select,
+  .lab-root textarea {
+    font-size: 1rem;
+  }
+}
+
+/* Lab mobile bottom sheet entrance */
+@keyframes lab-sheet-up {
+  from { transform: translateY(100%); }
+}
+.lab-sheet-in {
+  animation: lab-sheet-up 220ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-sheet-in { animation: none; }
+}

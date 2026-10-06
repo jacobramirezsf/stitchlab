@@ -1,0 +1,48 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node / Vite
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vercel
+.vercel
+
+# Project
+*.pxd
+
+# Full-size work photo originals (source for npm run optimize:work).
+# Only the optimized .webp in public/images/work are committed + deployed.
+# Remove this line if you'd rather version the originals here.
+work-photos/
+
+# Full-size garment photo originals (source for npm run optimize:garments)
+garment-photos/
+.bg-cache/
+
+# Environment secrets — never commit real keys
+.env
+.env.*
+!.env.example
+.exp*.bundle.mjs
+review/
+research-output/

@@ -1,0 +1,8 @@
+.venv/
+# Local sample rasters stay out; only the test fixtures are tracked.
+raster/*
+!raster/10yrs_confetti.png
+!raster/pear.png
+!raster/tada.png
+.vercel
+.env*

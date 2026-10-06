@@ -1,0 +1,16 @@
+# d.school jackets: redwork line art on twill, V4-matching thresholds
+[props]
+run_length = 2.2
+run_tolerance = 0.15
+tie_size = 0.5
+
+[lineart]
+style = "redwork"
+single_max_w = 0.45
+bean_max_w = 1.8
+
+[object.fill-outline]
+bean_repeats = 1
+
+[output]
+formats = ["dst", "pes"]

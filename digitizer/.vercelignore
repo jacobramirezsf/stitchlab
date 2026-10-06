@@ -1,0 +1,17 @@
+.venv
+output
+raster
+reference
+work-photos
+__pycache__
+.pytest_cache
+v5/output
+v5/tests
+v5/webui.py
+v5/regression.py
+*.dst
+*.pes
+*.be
+analyze_style.py
+digitize.py
+rasterize.mjs
