@@ -998,6 +998,17 @@ export const TOOLS: ToolDef[] = [
     status: "digitally-validated",
   },
   {
+    slug: "crossstitch4",
+    name: "Cross-Stitch V4",
+    tagline: "Cross-stitch from a photo, from clean chart to photoreal, with every control exposed",
+    blurb:
+      "Pick a look (clean chart, balanced, or photoreal), then tune it: how smooth or detailed, how much texture, which cones to keep or ban, the fabric color, two-cone blended crosses and half stitches, and how the machine routes each color.",
+    about:
+      "A new engine (lib/crossstitch4.ts). Color is averaged in linear light and compared in OKLab, with ΔE 2000 optional. The palette is picked straight from the cone catalog as a facility-location problem (greedy build plus swap passes), and kept or banned cones are respected. Cells are labeled by minimizing an edge-aware Potts energy: error diffusion in texture mode, ICM sweeps in clean mode, then merging any region below a minimum size. Bare fabric, blended crosses (one leg per cone) and half stitches are labels like any other, matched with the fabric showing through the legs. The stitches route on a half-leg lattice: either Eulerian trails, one per region, or diagonal chains that put every top leg the same way.",
+    component: lazy(() => import("./crossstitch4")),
+    status: "candidate",
+  },
+  {
     slug: "crossstitch3",
     name: "Cross-Stitch V3",
     tagline: "A cross-stitch chart from a photo, with full control and a cleaner file",
